@@ -25,10 +25,10 @@ async def root(url_input: URLInput):
         # Read the PDF content using PyMuPDF
         pdf_file = BytesIO(response.content)  # Create a file-like object
         pdf_document = fitz.open(stream=pdf_file, filetype="pdf")
-        page = pdf_document.load_page(1)
-
+        pages_text = [pdf_document.load_page(page_num).get_text("text") for page_num in range(pdf_document.page_count)]
+        pdf_document.close()
         
 
-        return page.get_text("text")
+        return ''.join(pages_text)
     except:
-        pass
+        raise ValueError('Invalid URL')
