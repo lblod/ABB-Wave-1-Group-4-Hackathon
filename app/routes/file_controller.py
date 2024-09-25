@@ -17,7 +17,7 @@ class URLInput(BaseModel):
     url: HttpUrl  # This will ensure the input is a valid URL
 
 @router.post("/summarize_pdf")
-async def root(url_input: URLInput):
+async def summarize_pdf(url_input: URLInput):
     try:
         # Fetch the PDF from the URL
         pdf_url = url_input.url 
@@ -51,3 +51,42 @@ async def root(url_input: URLInput):
         
     except:
         raise ValueError('Invalid URL')
+    
+@router.post("/process_tasks")
+async def process_tasks():
+        
+        url = 'http://llm:80/tasks'
+        headers = {
+            'accept': 'application/json',
+            'Content-Type': 'application/json'
+        }
+        data = {
+            "limit": 2
+        }
+
+        response = requests.get(url, headers=headers, params=data)
+
+        if response.status_code == 200:
+            tasks = response.content()
+
+            url = 'http://llm:80/tasks/results'
+            headers = {
+                'accept': 'application/json',
+                'Content-Type': 'application/json'
+            }
+
+            for i,task in enumerate(tasks):
+                summary = await summarize_pdf(url_input=task.get('downloadLink'))
+                tasks[i]['summary'] = summary
+            
+                data = {
+                    "body": tasks[i]['summary'],
+                    "motivation": "nill",
+                    "annotation_type": "summary",
+                    "besluit_uri": tasks[i]['uri']
+                    }
+                response = requests.post(url, headers=headers, json=data)
+            
+
+#     [  {    "uri": "http://data.lblod.info/id/besluiten/66F392C11B17750009000002",    "downloadLink": "https://besluiten.onroerenderfgoed.be/besluiten/14850/bestanden/28676",    "title": "Architectenwoning Louis Hagen",    "concept": ""   }
+# ]
