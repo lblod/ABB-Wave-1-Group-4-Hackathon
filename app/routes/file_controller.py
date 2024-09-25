@@ -55,7 +55,7 @@ async def summarize_pdf(url_input: URLInput):
 @router.post("/process_tasks")
 async def process_tasks():
         
-        url = 'http://llm:80/tasks'
+        url = 'http://llm:80/tasks' # 'http://llm:80/tasks'
         headers = {
             'accept': 'application/json',
             'Content-Type': 'application/json'
@@ -67,9 +67,8 @@ async def process_tasks():
         response = requests.get(url, headers=headers, params=data)
 
         if response.status_code == 200:
-            tasks = response.content()
-
-            url = 'http://llm:80/tasks/results'
+            tasks = response.json()
+            url = 'http://llm:80/tasks/results' # 'http://llm:80/tasks/results'
             headers = {
                 'accept': 'application/json',
                 'Content-Type': 'application/json'
