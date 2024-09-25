@@ -30,7 +30,7 @@ async def root(url_input: URLInput):
         pages_text = [pdf_document.load_page(page_num).get_text("text") for page_num in range(pdf_document.page_count)]
         pdf_document.close()
 
-        url = 'http://hackathon-ai-4.s.redhost.be:2000/summarize'
+        url = 'http://llm:80/summarize'# 'http://hackathon-ai-4.s.redhost.be:2000/summarize'
         headers = {
             'accept': 'application/json',
             'Content-Type': 'application/json'
