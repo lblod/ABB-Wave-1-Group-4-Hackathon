@@ -30,7 +30,7 @@ async def summarize_pdf(url_input: URLInput):
         pages_text = [pdf_document.load_page(page_num).get_text("text") for page_num in range(pdf_document.page_count)]
         pdf_document.close()
 
-        url = 'http://llm:80/summarize'# 'http://hackathon-ai-4.s.redhost.be:2000/summarize'
+        url =  'http://llm:80/summarize' # 'http://llm:80/summarize'
         headers = {
             'accept': 'application/json',
             'Content-Type': 'application/json'
@@ -42,7 +42,7 @@ async def summarize_pdf(url_input: URLInput):
         response = requests.post(url, headers=headers, json=data)
         
         if response.status_code == 200:
-            return JSONResponse(content=json.loads(response.json()), status_code=response.status_code)
+            return response.json()
         else:
             print(f"Request failed with status code {response.status_code}")
             raise ValueError('Request failed')
@@ -68,7 +68,7 @@ async def process_tasks():
 
         if response.status_code == 200:
             tasks = response.json()
-            url = 'http://llm:80/tasks/results' # 'http://llm:80/tasks/results'
+            url = 'http://llm:80/tasks/results' # 'http://hackathon-ai-4.s.redhost.be:2000/tasks/results'
             headers = {
                 'accept': 'application/json',
                 'Content-Type': 'application/json'
@@ -77,8 +77,8 @@ async def process_tasks():
             for i,task in enumerate(tasks):
                 url_input_instance = URLInput(url=task.get('downloadLink'))
                 summary = await summarize_pdf(url_input=url_input_instance)
-                tasks[i]['summary'] = summary
-            
+                summary = json.loads(summary)
+                tasks[i]['summary'] = summary['summary']
                 data = {
                     "body": tasks[i]['summary'],
                     "motivation": "nill",
@@ -87,6 +87,3 @@ async def process_tasks():
                     }
                 response = requests.post(url, headers=headers, json=data)
             
-
-#     [  {    "uri": "http://data.lblod.info/id/besluiten/66F392C11B17750009000002",    "downloadLink": "https://besluiten.onroerenderfgoed.be/besluiten/14850/bestanden/28676",    "title": "Architectenwoning Louis Hagen",    "concept": ""   }
-# ]
