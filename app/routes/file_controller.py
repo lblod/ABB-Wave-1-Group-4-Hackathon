@@ -126,15 +126,13 @@ async def summarize_pdf(url_input: URLInput, sys_prompt: str):
         else:
             print(f"Request failed with status code {response.status_code}")
             raise ValueError('Request failed')
-                
-
         
     except:
         raise ValueError('Invalid URL')
     
 @router.post("/process_tasks")
 async def process_tasks():
-        
+    try:
         url = 'http://llm:80/tasks' # 'http://llm:80/tasks'
         headers = {
             'accept': 'application/json',
@@ -202,4 +200,20 @@ async def process_tasks():
                 print(tasks[i])
                 print('='*50,response.status_code)
                 status_code = response.status_code
+
+    except:
+        url = 'http://llm:80/tasks/results' # 'http://hackathon-ai-4.s.redhost.be:2000/tasks/results'
+        headers = {
+            'accept': 'application/json',
+            'Content-Type': 'application/json'
+        }
+        permit_data = {
+                        "body": "No AI summary available.",
+                        "motivation": "nill",
+                        "annotation_type": "allowed_actions",
+                        "besluit_uri": tasks[i]['uri']
+                        }
+        response = requests.post(url, headers=headers, json=permit_data)
+        raise ValueError('Invalid URL')
+
             
