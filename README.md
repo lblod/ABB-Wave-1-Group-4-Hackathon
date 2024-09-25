@@ -1,5 +1,12 @@
 # ABB-Wave-1-Group-4-Hackathon
 
+## Endpoints
+
+On this project, we created two endpoints to perform the whole process:
+
+- `summarize_pdf` endpoint, that fetches a pdf given its url and creates a custom summary of the pdf, following specified rules.
+- `process_tasks` fetches every task of the triplestore (pending documents to analyze), and creates several oriented summaries of them. This will run in batch, but could be easily transformed into a scheduler.
+
 ## How to run
 
 In order to run the project, run:
