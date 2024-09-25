@@ -160,7 +160,7 @@ async def process_tasks():
                 # Generic summary post
                 generic_summary = await summarize_pdf(url_input=url_input_instance, sys_prompt=SYS_PROMPT01)
                 generic_summary = json.loads(generic_summary)
-                tasks[i]['generic_summary'] = generic_summary['summary']
+                tasks[i]['generic_summary'] = generic_summary['samenvatting']
                 generic_data = {
                     "body": tasks[i]['generic_summary'],
                     "motivation": "nill",
@@ -172,7 +172,7 @@ async def process_tasks():
                 # Allowed actions summary post
                 allowed_summary = await summarize_pdf(url_input=url_input_instance, sys_prompt=SYS_PROMPT02)
                 allowed_summary = json.loads(allowed_summary)
-                tasks[i]['allowed_summary'] = allowed_summary['summary']
+                tasks[i]['allowed_summary'] = allowed_summary['samenvatting']
                 allowed_data = {
                     "body": tasks[i]['allowed_summary'],
                     "motivation": "nill",
@@ -184,7 +184,7 @@ async def process_tasks():
                 # Requires permit summary post
                 permit_summary = await summarize_pdf(url_input=url_input_instance, sys_prompt=SYS_PROMPT03)
                 permit_summary = json.loads(permit_summary)
-                tasks[i]['permit_summary'] = permit_summary['summary']
+                tasks[i]['permit_summary'] = permit_summary['samenvatting']
                 permit_data = {
                     "body": tasks[i]['permit_summary'],
                     "motivation": "nill",
