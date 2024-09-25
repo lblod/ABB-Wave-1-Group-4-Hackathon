@@ -75,7 +75,8 @@ async def process_tasks():
             }
 
             for i,task in enumerate(tasks):
-                summary = await summarize_pdf(url_input=task.get('downloadLink'))
+                url_input_instance = URLInput(url=task.get('downloadLink'))
+                summary = await summarize_pdf(url_input=url_input_instance)
                 tasks[i]['summary'] = summary
             
                 data = {
