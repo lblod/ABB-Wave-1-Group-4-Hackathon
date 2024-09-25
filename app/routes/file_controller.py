@@ -141,55 +141,62 @@ async def process_tasks():
             'Content-Type': 'application/json'
         }
         data = {
-            "limit": 2
+            "limit": 10
         }
 
-        response = requests.get(url, headers=headers, params=data)
+        status_code = 200
 
-        if response.status_code == 200:
-            tasks = response.json()
-            url = 'http://llm:80/tasks/results' # 'http://hackathon-ai-4.s.redhost.be:2000/tasks/results'
-            headers = {
-                'accept': 'application/json',
-                'Content-Type': 'application/json'
-            }
+        while status_code == 200:
+            response = requests.get(url, headers=headers, params=data)
+            if response.status_code == 200:
+                status_code = response.status_code
+                tasks = response.json()
+                url = 'http://llm:80/tasks/results' # 'http://hackathon-ai-4.s.redhost.be:2000/tasks/results'
+                headers = {
+                    'accept': 'application/json',
+                    'Content-Type': 'application/json'
+                }
 
-            for i,task in enumerate(tasks):
-                url_input_instance = URLInput(url=task.get('downloadLink'))
+                for i,task in enumerate(tasks):
+                    url_input_instance = URLInput(url=task.get('downloadLink'))
 
-                # Generic summary post
-                generic_summary = await summarize_pdf(url_input=url_input_instance, sys_prompt=SYS_PROMPT01)
-                generic_summary = json.loads(generic_summary)
-                tasks[i]['generic_summary'] = generic_summary['samenvatting']
-                generic_data = {
-                    "body": tasks[i]['generic_summary'],
-                    "motivation": "nill",
-                    "annotation_type": "summary",
-                    "besluit_uri": tasks[i]['uri']
-                    }
-                response = requests.post(url, headers=headers, json=generic_data)
+                    # Generic summary post
+                    generic_summary = await summarize_pdf(url_input=url_input_instance, sys_prompt=SYS_PROMPT01)
+                    generic_summary = json.loads(generic_summary)
+                    tasks[i]['generic_summary'] = generic_summary['samenvatting']
+                    generic_data = {
+                        "body": tasks[i]['generic_summary'],
+                        "motivation": "nill",
+                        "annotation_type": "summary",
+                        "besluit_uri": tasks[i]['uri']
+                        }
+                    response = requests.post(url, headers=headers, json=generic_data)
 
-                # Allowed actions summary post
-                allowed_summary = await summarize_pdf(url_input=url_input_instance, sys_prompt=SYS_PROMPT02)
-                allowed_summary = json.loads(allowed_summary)
-                tasks[i]['allowed_summary'] = allowed_summary['samenvatting']
-                allowed_data = {
-                    "body": tasks[i]['allowed_summary'],
-                    "motivation": "nill",
-                    "annotation_type": "allowed_actions",
-                    "besluit_uri": tasks[i]['uri']
-                    }
-                response = requests.post(url, headers=headers, json=allowed_data)
+                    # Allowed actions summary post
+                    allowed_summary = await summarize_pdf(url_input=url_input_instance, sys_prompt=SYS_PROMPT02)
+                    allowed_summary = json.loads(allowed_summary)
+                    tasks[i]['allowed_summary'] = allowed_summary['samenvatting']
+                    allowed_data = {
+                        "body": tasks[i]['allowed_summary'],
+                        "motivation": "nill",
+                        "annotation_type": "allowed_actions",
+                        "besluit_uri": tasks[i]['uri']
+                        }
+                    response = requests.post(url, headers=headers, json=allowed_data)
 
-                # Requires permit summary post
-                permit_summary = await summarize_pdf(url_input=url_input_instance, sys_prompt=SYS_PROMPT03)
-                permit_summary = json.loads(permit_summary)
-                tasks[i]['permit_summary'] = permit_summary['samenvatting']
-                permit_data = {
-                    "body": tasks[i]['permit_summary'],
-                    "motivation": "nill",
-                    "annotation_type": "allowed_actions",
-                    "besluit_uri": tasks[i]['uri']
-                    }
-                response = requests.post(url, headers=headers, json=permit_data)
+                    # Requires permit summary post
+                    permit_summary = await summarize_pdf(url_input=url_input_instance, sys_prompt=SYS_PROMPT03)
+                    permit_summary = json.loads(permit_summary)
+                    tasks[i]['permit_summary'] = permit_summary['samenvatting']
+                    permit_data = {
+                        "body": tasks[i]['permit_summary'],
+                        "motivation": "nill",
+                        "annotation_type": "allowed_actions",
+                        "besluit_uri": tasks[i]['uri']
+                        }
+                    response = requests.post(url, headers=headers, json=permit_data)
+            else:
+                print(tasks[i])
+                print('='*50,response.status_code)
+                status_code = response.status_code
             
